@@ -14,6 +14,13 @@ class FieldCreate(BaseModel):
     area_ha: Optional[float] = None
     owned: Optional[bool] = False
 
+class FieldUpdate(BaseModel):
+    fs_field_id: Optional[int] = None
+    fs_farmland_id: Optional[int] = None
+    name: Optional[str] = None
+    area_ha: Optional[float] = None
+    owned: Optional[bool] = None
+
 class FieldResponse(BaseModel):
     id: str
     fs_field_id: int
@@ -45,7 +52,7 @@ def create_field(field: FieldCreate, db: Session = Depends(get_db)):
     return db_field
 
 @router.patch("/{field_id}", response_model=FieldResponse)
-def update_field(field_id: str, field: FieldCreate, db: Session = Depends(get_db)):
+def update_field(field_id: str, field: FieldUpdate, db: Session = Depends(get_db)):
     db_field = db.query(Field).filter(Field.id == field_id).first()
     if not db_field:
         raise HTTPException(status_code=404, detail="Pole nenalezeno")

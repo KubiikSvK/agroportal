@@ -113,6 +113,7 @@ class Vehicle(Base):
     wear = Column(Float)
     operating_time = Column(Float)
     is_leased = Column(Boolean, default=False)
+    property_state = Column(String)
     save = relationship("Save", back_populates="vehicles")
 
 class WeatherLog(Base):
@@ -135,3 +136,29 @@ class SyncHistory(Base):
     balance = Column(Float)
     synced_at = Column(DateTime, server_default=func.now())
     status = Column(String, default="ok")
+
+class MapAsset(Base):
+    __tablename__ = "map_assets"
+    id = Column(String, primary_key=True, default=gen_uuid)
+    map_id = Column(String)
+    source_url = Column(String)
+    file_path = Column(String)
+    asset_type = Column(String, default="pdf")
+    status = Column(String, default="stored")
+    created_at = Column(DateTime, server_default=func.now())
+
+class FieldGeometry(Base):
+    __tablename__ = "field_geometry"
+    id = Column(String, primary_key=True, default=gen_uuid)
+    field_id = Column(String, ForeignKey("fields.id"))
+    geometry_geojson = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+    field = relationship("Field")
+
+class Crop(Base):
+    __tablename__ = "crops"
+    id = Column(String, primary_key=True, default=gen_uuid)
+    code = Column(String, unique=True)
+    name = Column(String)
+    color = Column(String)
+    created_at = Column(DateTime, server_default=func.now())
