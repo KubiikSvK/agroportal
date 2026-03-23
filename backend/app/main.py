@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 import app.models.models
+from app.routers import fields
 
 app = FastAPI(
     title="AgroPortál API",
@@ -18,6 +19,8 @@ app.add_middleware(
 )
 
 Base.metadata.create_all(bind=engine)
+
+app.include_router(fields.router)
 
 @app.get("/")
 def root():
