@@ -1,65 +1,83 @@
 # AgroPortal (FS25 Farm Management)
 
-Web dashboard for managing FS25 savegames, fields, machinery, weather, and crop rotation. Designed for multiplayer HQ workflows and rapid map/sav e swaps.
+Portál pro správu FS25 map a savegame s důrazem na **multiplayer**, **rychlé nasazování** a **přehledný agrární dashboard**.  
+Obsahuje mapu polí s overlayi, rotaci plodin, finance, stroje a nástroje pro synchronizaci.
 
-## Quick Start
+---
 
-1. Copy env file and adjust values if needed:
+## Rychlý start
+
+1. Zkopíruj env soubor:
    - `copy .env.example .env`
-2. Build and start containers:
+2. Spusť build a kontejnery:
    - `docker compose up --build`
-3. Open:
+3. Otevři:
    - Frontend: `http://localhost:3001`
    - Backend API: `http://localhost:8001`
 
-> Ports are defined in `docker-compose.yml` (frontend 3001, backend 8001).
+> Porty jsou definované v `docker-compose.yml` (frontend 3001, backend 8001).
 
-## Core Features
+---
 
-- Map overview with field overlays
-- Savegame ingest + re-ingest
-- Crop rotation recommendations and multi-year plan
-- Vehicles inventory cards
-- Sync history & finance snapshots
-- Map bundle deploy (map ZIP + save ZIP)
+## Co AgroPortal umí
 
-## Map & Save Deployment
+- Mapa polí s přesným polygonovým overlayem
+- Ingest a re‑ingest savegame
+- Crop rotation doporučení + víceletý plán
+- Přehled strojů (karty, stav, opotřebení)
+- Finance + historie syncu
+- Deploy mapy + savegame v jednom kroku
 
-Use the frontend “Deploy bundle” form or call the API directly:
+---
+
+## Deploy mapy a savegame
+
+Použij formulář ve frontendu nebo API:
 
 - `POST /sync/deploy` (multipart: `map_zip`, `save_zip`)
-- Progress: `GET /sync/deploy-status/{job_id}`
+- Průběh: `GET /sync/deploy-status/{job_id}`
 
-The backend:
-- Extracts the map ZIP
-- Detects map XML (`<map ...>` with `imageFilename/width/height`)
-- Stores map image as `MapAsset` type `image`
-- Stores XML as `MapAsset` type `config`
-- Imports I3D polygons (optional)
+Backend při deployi:
+- rozbalí map ZIP
+- najde mapový XML (`<map ...>` s `imageFilename/width/height`)
+- uloží mapový obrázek jako `MapAsset` typu `image`
+- uloží mapový XML jako `MapAsset` typu `config`
+- importuje I3D polygony (volitelné)
 
-## Map Scaling (2048m vs 4096px)
+---
 
-FS25 maps typically use a **2048 x 2048 meter** playable area, while PDA images can be **4096 x 4096 px**. The frontend treats the image as a larger canvas and centers the 2048m playable area inside it. Field polygons are plotted in **map meters**; the image provides the visual background.
+## Měřítko mapy (2048 m vs 4096 px)
 
-If the map does not show:
-- Check `GET /maps/active-image`
-- Check `GET /maps/assets` for `asset_type: image` and `config`
+FS25 používá **hratelnou plochu 2048 × 2048 metrů**, ale PDA obrázek bývá **4096 × 4096 px**.  
+Frontend počítá s tím, že:
 
-## Manual Refresh
+- **polygony jsou v metrech** (2048)
+- **obrázek je větší plátno** (4096) a hratelná plocha je vycentrovaná
 
-Map data is **manual refresh only** to avoid auto-zoom resets. Use the `Refresh` button in the map page to reload layers.
+Pokud se mapa nezobrazuje:
+- Zkontroluj `GET /maps/active-image`
+- Zkontroluj `GET /maps/assets` pro `asset_type: image` a `config`
 
-## Environment Variables
+---
 
-All secrets live in `.env`:
+## Ruční refresh mapy
+
+Mapa je **ručně obnovovaná**, aby se neresetovalo přiblížení. Použij tlačítko `Refresh` na stránce mapy.
+
+---
+
+## Prostředí (.env)
+
+Všechny tajné hodnoty jsou v `.env`:
 - `POSTGRES_DB`
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
 - `SECRET_KEY`
-- `AGRO_API_KEY` (or `API_KEY` fallback)
+- `AGRO_API_KEY` (fallback `API_KEY`)
 
-## Project Notes
+---
 
-- Detailed context: `docs/context.md`
-- Map workflow notes: `PDAmap.md`
+## Kontext projektu
+
+- Kontext: `docs/context.md`
 
